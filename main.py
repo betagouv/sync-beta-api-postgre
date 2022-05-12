@@ -7,7 +7,13 @@ from sqlalchemy import create_engine
 
 load_dotenv()
 
-ENGINE = create_engine(os.getenv("SCALINGO_POSTGRESQL_URL"))
+db_url = os.getenv("SCALINGO_POSTGRESQL_URL")
+
+# see the NB note in README > Setup
+if db_url.split("://")[0] == "postgre":
+    db_url = db_url.replace("postgre", "postgresql", 1)
+
+ENGINE = create_engine(db_url)
 
 API_VERSION = os.getenv("BETA_API_VERSION", "2.5")
 
