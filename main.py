@@ -17,14 +17,37 @@ ENGINE = create_engine(db_url)
 
 API_VERSION = os.getenv("BETA_API_VERSION", "2.5")
 
+def _extract_national_impact(events):
+    """
+    Extract national impact info from events column in startup data
+    """
+    if len(events)==0:
+        return None
+    for event in events:
+        if event["name"]=="national_impact":
+            return event["date"]
+    return None
+
+def _extract_start_construction(phases):
+    """
+    Extract start of construction phase info from phases column in startup data
+    """
+    construction = [phase["start"] for phase in phases if phase.get("name")=="construction"]
+    return construction[0] if len(construction)!=0 else None
+
 def get_startups_data() -> pd.DataFrame:
     """
     Fetch and format the startups beta.gouv.fr API into a pandas dataframe
     """
     r = requests.get(f"https://beta.gouv.fr/api/v{API_VERSION}/startups.json")
     json_data = r.json()
+    incubators = pd.DataFrame(json_data["data"])["relationships"].apply(pd.Series)["incubator"].apply(pd.Series)["data"].apply(pd.Series)["id"]
     data = pd.DataFrame(json_data["data"])["attributes"].apply(pd.Series)
+    data["incubator"] = incubators.copy()
     data["current_phase"] = data.phases.apply(lambda x: x[-1]["name"])
+    data["date_current_phase"] = pd.to_datetime(data.phases.apply(lambda x: x[-1]["start"]))
+    data["date_impact_national"] = pd.to_datetime(data.events.apply(_extract_national_impact))
+    data["date_start_construction"] = pd.to_datetime(data.phases.apply(_extract_start_construction))
     data["missing_stats"] = data.stats_url.isna()
     data["missing_budget"] = data.budget_url.isna()
     data["missing_os"] = data.repository.isna()
