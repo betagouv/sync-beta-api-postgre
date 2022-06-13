@@ -1,7 +1,7 @@
 {
     "jobs": [
       {
-        "command": "30 2 * * * make sync",
+        "command": "30 2 * * * python main.py",
         "size": "M"
       }
     ]
