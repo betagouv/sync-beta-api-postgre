@@ -1,2 +1,1 @@
-web: echo "hello"
-postdeploy: python main.py
+web: python main.py
