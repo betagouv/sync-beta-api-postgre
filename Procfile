@@ -1,1 +1,1 @@
-web: bash echo "hello"
+web: echo "hello"
