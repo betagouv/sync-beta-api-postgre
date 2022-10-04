@@ -10,8 +10,8 @@ load_dotenv()
 db_url = os.getenv("SCALINGO_POSTGRESQL_URL")
 
 # see the NB note in README > Setup
-if db_url.split("://")[0] == "postgre":
-    db_url = db_url.replace("postgre", "postgresql", 1)
+if db_url.split("://")[0] == "postgres":
+    db_url = db_url.replace("postgres", "postgresql", 1)
 
 ENGINE = create_engine(db_url)
 
