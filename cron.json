@@ -1,7 +1,7 @@
 {
     "jobs": [
       {
-        "command": "10 13 * * * python main.py",
+        "command": "50 9 * * * python main.py",
         "size": "M"
       }
     ]
